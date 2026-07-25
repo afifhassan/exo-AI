@@ -16,7 +16,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 # 1. PAGE CONFIGURATION & ENTERPRISE CSS
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Resonant Worlds | Enterprise"
+    page_title="Resonant Worlds | Enterprise",
     page_icon="🪐",
     layout="wide",
     initial_sidebar_state="collapsed",
