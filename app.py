@@ -19,7 +19,7 @@ st.set_page_config(
     page_title="Exo-AI | NASA Exoplanet Platform",
     page_icon="🪐",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed" # Hide the default sidebar
 )
 
 st.markdown("""
@@ -61,7 +61,7 @@ st.markdown("""
         background: rgba(15, 23, 42, 0.65);
         backdrop-filter: blur(16px);
         border: 1px solid rgba(56, 189, 248, 0.2);
-        border-radius: 16px; padding: 16px 28px; margin-bottom: 25px;
+        border-radius: 16px; padding: 16px 28px;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
     }
     
@@ -79,10 +79,22 @@ st.markdown("""
         box-shadow: 0 12px 30px -10px rgba(56, 189, 248, 0.4);
     }
 
+    /* Hide the default Streamlit sidebar entirely */
     section[data-testid="stSidebar"] {
-        background: rgba(8, 13, 26, 0.85) !important;
-        backdrop-filter: blur(20px);
-        border-right: 1px solid rgba(56, 189, 248, 0.2);
+        display: none;
+    }
+
+    /* Style the horizontal radio to look like a Navigation Bar */
+    div[data-testid="stRadio"] > div {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+        background: rgba(15, 23, 42, 0.5);
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -211,49 +223,49 @@ def get_theme_chart_layout(title, x_title="", y_title=""):
     )
 
 # ---------------------------------------------------------
-# 3. SIDEBAR NAVIGATION & LOGO
+# 3. TOP NAVIGATION & HEADER
 # ---------------------------------------------------------
-with st.sidebar:
-    logo_found = False
+
+col_logo, col_title = st.columns([1, 12])
+
+with col_logo:
+    # Look for and load the logo in the top left
     for logo_name in ["logo.png", "logo.jpg", "logo.jpeg", "logo.webp"]:
         if os.path.exists(logo_name):
             st.image(logo_name, use_container_width=True)
-            logo_found = True
             break
-            
-    if not logo_found:
-        st.markdown("### 🪐 Exo-AI Portal")
-    
-    st.markdown("## 🪐 Navigation")
-    page = st.radio(
-        "Select Page",
-        [
-            "🏠 System Dashboard",
-            "🤖 AI Prediction Studio",
-            "📁 Custom Data Analysis",
-            "📊 NASA Database Explorer",
-            "📉 Light Curve Modeling"
-        ],
-        label_visibility="collapsed"
-    )
-    st.markdown("---")
-    st.caption("**Model Engine:** Random Forest Classifier")
-    st.caption("**Status:** Orbital Sync Complete")
 
-# Top Header Banner
-st.markdown("""
-    <div class="top-header">
-        <div style="font-size: 1.8rem; font-weight: 800; color: #f8fafc;">🪐 Exo-AI Portal</div>
-        <div style="display: flex; align-items: center; color: #38bdf8; font-weight: 600;">
-            <span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED
+with col_title:
+    # Top Header Banner next to the logo
+    st.markdown("""
+        <div class="top-header">
+            <div style="font-size: 1.8rem; font-weight: 800; color: #f8fafc;">🪐 Exo-AI Portal</div>
+            <div style="display: flex; align-items: center; color: #38bdf8; font-weight: 600;">
+                <span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED
+            </div>
         </div>
-    </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+# Horizontal Navigation Bar
+page = st.radio(
+    "Navigation",
+    [
+        "🏠 Dashboard",
+        "🤖 AI Studio",
+        "📁 Custom Data",
+        "📊 NASA Explorer",
+        "📉 Light Curve"
+    ],
+    horizontal=True,
+    label_visibility="collapsed"
+)
+
+st.markdown("---")
 
 # ---------------------------------------------------------
 # PAGE: SYSTEM DASHBOARD
 # ---------------------------------------------------------
-if page == "🏠 System Dashboard":
+if page == "🏠 Dashboard":
     st.markdown("## 🌌 Welcome to Exo-AI Intelligence")
     st.write("An advanced machine learning suite for astrophysical signal classification.")
     
@@ -271,7 +283,7 @@ if page == "🏠 System Dashboard":
                 <p>Navigate the cosmos using our AI-driven toolset:</p>
                 <ul>
                     <li><b>AI Studio:</b> Manually test signal parameters against the model.</li>
-                    <li><b>Custom Data Analysis:</b> Upload your own CSV telescope data for batch AI predictions.</li>
+                    <li><b>Custom Data:</b> Upload your own CSV telescope data for batch AI predictions.</li>
                     <li><b>NASA Explorer:</b> Live-query satellite databases & launch 3D space visualizers.</li>
                 </ul>
             </div>
@@ -286,7 +298,7 @@ if page == "🏠 System Dashboard":
 # ---------------------------------------------------------
 # PAGE: AI PREDICTION STUDIO
 # ---------------------------------------------------------
-elif page == "🤖 AI Prediction Studio":
+elif page == "🤖 AI Studio":
     st.markdown("## 🤖 Manual Exoplanet Classifier")
     col_inp, col_out = st.columns([1.1, 1])
     with col_inp:
@@ -312,7 +324,7 @@ elif page == "🤖 AI Prediction Studio":
 # ---------------------------------------------------------
 # PAGE: CUSTOM DATA ANALYSIS
 # ---------------------------------------------------------
-elif page == "📁 Custom Data Analysis":
+elif page == "📁 Custom Data":
     st.markdown("## 📁 Upload Telemetry Data for Batch Analysis")
     st.write("Upload a CSV file containing space telemetry data. The AI will analyze the dataset and classify each signal.")
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -345,7 +357,7 @@ elif page == "📁 Custom Data Analysis":
 # ---------------------------------------------------------
 # PAGE: NASA DATABASE EXPLORER & 3D VISUAL SIMULATOR
 # ---------------------------------------------------------
-elif page == "📊 NASA Database Explorer":
+elif page == "📊 NASA Explorer":
     st.markdown("## 📊 NASA Mission Archive & 3D Visual Simulator")
     st.write("Select a satellite mission to query its dataset and generate an interactive 3D sector map.")
     
@@ -402,7 +414,7 @@ elif page == "📊 NASA Database Explorer":
 # ---------------------------------------------------------
 # PAGE: LIGHT CURVE MODELING
 # ---------------------------------------------------------
-elif page == "📉 Light Curve Modeling":
+elif page == "📉 Light Curve":
     st.markdown("## 📉 Photometric Transit Simulator")
     st.write("Model the light dimming effect when an exoplanet passes in front of its host star.")
     
