@@ -7,10 +7,10 @@ __pycache__/
 venv/
 ENV/
 env/
+.venv/
 .expoenv/
 .expo-env/
 .env/
-.pytest_cache/
 
 # Distribution / packaging
 build/
@@ -18,14 +18,6 @@ dist/
 *.egg-info/
 *.eggs/
 *.whl
-
-# Data and model artifacts
-*.db
-*.sqlite3
-*.pkl
-*.h5
-*.ckpt
-*.pth
 
 # IDE/editor files
 .vscode/
