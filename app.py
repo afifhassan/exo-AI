@@ -123,7 +123,11 @@ st.markdown("""
 # ---------------------------------------------------------
 # 2. AUTOMATIC DATABASE & ML BACKEND
 # ---------------------------------------------------------
-DB_FILE = "exoplanet_ai_core.db"
+# ---------------------------------------------------------
+# 2. AUTOMATIC DATABASE & ML BACKEND
+# ---------------------------------------------------------
+# 1. Renamed the database file to force a fresh download
+DB_FILE = "exo_archive_v2.db" 
 
 @st.cache_data(show_spinner=False)
 def ensure_database_exists():
@@ -137,11 +141,15 @@ def ensure_database_exists():
         }
         for db_name, tap_name in tables.items():
             try:
-                encoded_query = urllib.parse.quote(f"select * from {tap_name}")
+                # 2. Added 'top 2000' to the query to prevent API timeouts!
+                encoded_query = urllib.parse.quote(f"select top 2000 * from {tap_name}")
                 url = f"https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query={encoded_query}&format=csv"
                 df = pd.read_csv(url, low_memory=False)
-                df.to_sql(db_name, engine, if_exists='replace', index=False)
-            except Exception:
+                
+                # 3. Only save it to the database if it actually contains rows
+                if len(df) > 0:
+                    df.to_sql(db_name, engine, if_exists='replace', index=False)
+            except Exception as e:
                 pass
 
 ensure_database_exists()
