@@ -7,8 +7,8 @@ import sqlite3
 import joblib
 import os
 import urllib.parse
+import base64
 from sqlalchemy import create_engine
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
@@ -17,7 +17,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="Exo-AI | NASA Exoplanet Platform",
-    page_icon="🪐",
+    page_icon="logo.jpg",
     layout="wide",
     initial_sidebar_state="collapsed" # Hide the default sidebar
 )
@@ -229,32 +229,50 @@ def get_theme_chart_layout(title, x_title="", y_title=""):
 col_logo, col_title = st.columns([1, 12])
 
 with col_logo:
-    # Look for and load the logo in the top left
-    for logo_name in ["logo.png", "logo.jpg", "logo.jpeg", "logo.webp"]:
+    # Look for and load logo.jpg in the top left
+    for logo_name in ["logo.jpg", "Exo-AI_NASA_exoplanet_intelligen…_2K_202607262235_3.jpeg", "logo.png", "logo.jpeg", "logo.webp"]:
         if os.path.exists(logo_name):
             st.image(logo_name, use_container_width=True)
             break
 
+# Function to inject your custom logo image into the HTML header
+def get_base64_image(image_path):
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    except Exception:
+        return ""
+
+logo_base64 = get_base64_image("logo.jpg")
+if not logo_base64:
+    logo_base64 = get_base64_image("Exo-AI_NASA_exoplanet_intelligen…_2K_202607262235_3.jpeg")
+
+# HTML image markup for logo header and inline section headings
+logo_html = f'<img src="data:image/jpeg;base64,{logo_base64}" width="34" height="34" style="border-radius: 50%; margin-right: 10px; vertical-align: bottom; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">' if logo_base64 else '<img src="logo.jpg" width="34" height="34" style="border-radius: 50%; margin-right: 10px; vertical-align: bottom;">'
+icon_html = f'<img src="data:image/jpeg;base64,{logo_base64}" width="28" height="28" style="border-radius: 50%; vertical-align: middle; margin-right: 8px;">' if logo_base64 else '<img src="logo.jpg" width="28" height="28" style="border-radius: 50%; vertical-align: middle; margin-right: 8px;">'
+
 with col_title:
     # Top Header Banner next to the logo
-    st.markdown("""
+    st.markdown(f"""
         <div class="top-header">
-            <div style="font-size: 1.8rem; font-weight: 800; color: #f8fafc;">🪐 Exo-AI Portal</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: #f8fafc; display: flex; align-items: center;">
+                {logo_html} Exo-AI Portal
+            </div>
             <div style="display: flex; align-items: center; color: #38bdf8; font-weight: 600;">
                 <span class="pulse-dot"></span> SECURE UPLINK ESTABLISHED
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-# Horizontal Navigation Bar
+# Horizontal Navigation Bar using dynamically matched emojis
 page = st.radio(
     "Navigation",
     [
-        "🏠 Dashboard",
-        "🤖 AI Studio",
-        "📁 Custom Data",
-        "📊 NASA Explorer",
-        "📉 Light Curve"
+        "🎛️ Dashboard",
+        "✨ AI Studio",
+        "☑️ Custom Data",
+        "🚀 NASA Explorer",
+        "📈 Light Curve"
     ],
     horizontal=True,
     label_visibility="collapsed"
@@ -265,8 +283,8 @@ st.markdown("---")
 # ---------------------------------------------------------
 # PAGE: SYSTEM DASHBOARD
 # ---------------------------------------------------------
-if page == "🏠 Dashboard":
-    st.markdown("## 🌌 Welcome to Exo-AI Intelligence")
+if page == "🎛️ Dashboard":
+    st.markdown(f"## {icon_html} Welcome to Exo-AI Intelligence", unsafe_allow_html=True)
     st.write("An advanced machine learning suite for astrophysical signal classification.")
     
     c1, c2, c3, c4 = st.columns(4)
@@ -298,8 +316,8 @@ if page == "🏠 Dashboard":
 # ---------------------------------------------------------
 # PAGE: AI PREDICTION STUDIO
 # ---------------------------------------------------------
-elif page == "🤖 AI Studio":
-    st.markdown("## 🤖 Manual Exoplanet Classifier")
+elif page == "✨ AI Studio":
+    st.markdown("## ✨ Manual Exoplanet Classifier")
     col_inp, col_out = st.columns([1.1, 1])
     with col_inp:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -324,8 +342,8 @@ elif page == "🤖 AI Studio":
 # ---------------------------------------------------------
 # PAGE: CUSTOM DATA ANALYSIS
 # ---------------------------------------------------------
-elif page == "📁 Custom Data":
-    st.markdown("## 📁 Upload Telemetry Data for Batch Analysis")
+elif page == "☑️ Custom Data":
+    st.markdown("## ☑️ Upload Telemetry Data for Batch Analysis")
     st.write("Upload a CSV file containing space telemetry data. The AI will analyze the dataset and classify each signal.")
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.info("💡 Your CSV must contain these columns to be analyzed: `koi_period`, `koi_duration`, `koi_prad`, `koi_depth`")
@@ -357,8 +375,8 @@ elif page == "📁 Custom Data":
 # ---------------------------------------------------------
 # PAGE: NASA DATABASE EXPLORER & 3D VISUAL SIMULATOR
 # ---------------------------------------------------------
-elif page == "📊 NASA Explorer":
-    st.markdown("## 📊 NASA Mission Archive & 3D Visual Simulator")
+elif page == "🚀 NASA Explorer":
+    st.markdown("## 🚀 NASA Mission Archive & 3D Visual Simulator")
     st.write("Select a satellite mission to query its dataset and generate an interactive 3D sector map.")
     
     col_a, col_b = st.columns([3, 1])
@@ -380,7 +398,7 @@ elif page == "📊 NASA Explorer":
     st.dataframe(df, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown("### 🌌 Interactive 3D Sector Simulator")
+    st.markdown(f"### {icon_html} Interactive 3D Sector Simulator", unsafe_allow_html=True)
     num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     
     if len(num_cols) >= 3:
@@ -414,8 +432,8 @@ elif page == "📊 NASA Explorer":
 # ---------------------------------------------------------
 # PAGE: LIGHT CURVE MODELING
 # ---------------------------------------------------------
-elif page == "📉 Light Curve":
-    st.markdown("## 📉 Photometric Transit Simulator")
+elif page == "📈 Light Curve":
+    st.markdown("## 📈 Photometric Transit Simulator")
     st.write("Model the light dimming effect when an exoplanet passes in front of its host star.")
     
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
